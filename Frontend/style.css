@@ -1,0 +1,70 @@
+body {
+    display: flex;
+    justify-content: space-evenly;
+    background-image: url("../backend/Datos/fotos/fondo2.jpg") ;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+
+button {
+    margin-bottom: 40px;
+}
+
+
+#Titulo1 {
+    font-size: 60px;
+    margin-bottom: 0px;
+    font-family: Jost, sans-serif;
+    font-weight: bold;
+    font-size: 3rem;
+    background: linear-gradient(rgb(15, 0, 130) 50%, rgb(9, 118, 5) 75%);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    }
+
+#text3 {
+    font-size: 30px;
+    font-style: italic;
+    color: darkblue;
+    margin: 1px;
+
+}
+
+#login {
+    display: flex;
+}
+
+#form-container {
+    display: flex;
+    align-items: center;
+}
+
+.form-group {
+    justify-content: right;
+    margin-bottom: 0px;
+    margin-right: 40px;
+    background-color: transparent;
+}
+
+.form-multiple {
+    display: flex;
+    flex-direction:row;
+    justify-content: space-between;
+    width: 1000px;
+    gap: 50px;
+    margin-bottom: 50px;
+    text-align: center;
+}
+.form-multipleT {
+    display: flex;
+    flex-direction:row;
+    justify-content: center;
+    width: 1000px;
+    gap: 50px;
+    margin-bottom: 50px;
+    text-align: center;
+}
+

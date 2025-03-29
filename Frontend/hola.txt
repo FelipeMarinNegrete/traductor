@@ -1,0 +1,89 @@
+ function startRecording() {
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(stream => {
+            // Iniciar la grabación
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.start();
+            mediaRecorder.ondataavailable = event => {
+                audioChunks.push(event.data);
+            };
+
+            // Configurar el audio para la detección de silencio
+            audioContext = new AudioContext();
+            analyser = audioContext.createAnalyser();
+            microphone = audioContext.createMediaStreamSource(stream);
+            scriptProcessor = audioContext.createScriptProcessor(256, 1, 1);
+
+            analyser.smoothingTimeConstant = 0.95; // Más suavizado para captar mejor el sonido promedio
+            analyser.fftSize = 2048; // Aumenta el tamaño del búfer para obtener análisis más precisos
+
+            microphone.connect(analyser);
+            analyser.connect(scriptProcessor);
+            scriptProcessor.connect(audioContext.destination);
+
+            // Analizar el audio para detectar silencio
+            scriptProcessor.onaudioprocess = function() {
+                let array = new Uint8Array(analyser.frequencyBinCount);
+                analyser.getByteFrequencyData(array);
+
+                let values = 0;
+                let length = array.length;
+                for (let i = 0; i < length; i++) {
+                    values += array[i];
+                }
+
+                let average = values / length;
+
+                // Mostrar el promedio para fines de depuración (opcional)
+                console.log("Volumen promedio:", average);
+
+                // Si el volumen promedio es menor que el umbral de silencio
+                if (average < silenceThreshold) {
+                    if (!silenceTimer) {
+                        silenceTimer = setTimeout(stopRecording, silenceTimeout); // Detener después de silencio continuo
+                    }
+                } else {
+                    clearTimeout(silenceTimer); // Reiniciar el temporizador si no hay silencio
+                    silenceTimer = null;
+                }
+            };
+        })
+        .catch(error => {
+            console.error("Error al acceder al micrófono:", error);
+        });
+    } else {
+        alert("Tu navegador no soporta la grabación de audio.");
+    }
+}
+
+function stopRecording() {
+    if (mediaRecorder) {
+        mediaRecorder.stop();
+        mediaRecorder.onstop = () => {
+            const audioBlob = new Blob(audioChunks, { 'type': 'audio/wav; codecs=opus' });
+            const audioURL = URL.createObjectURL(audioBlob);
+
+            // Reemplazar el audio anterior (si existe) o crear un nuevo elemento
+            if (!audioElement) {
+                audioElement = document.createElement('audio');
+                audioElement.controls = true;
+                document.body.appendChild(audioElement);
+            }
+
+            // Establecer la nueva fuente de audio
+            audioElement.src = audioURL;
+
+            // Limpiar para una nueva grabación
+            audioChunks = [];
+        };
+
+        // Detener el análisis de audio
+        if (audioContext) {
+            audioContext.close();
+        }
+        clearTimeout(silenceTimer);
+    } else {
+        alert("No se está grabando audio actualmente.");
+    }
+}
