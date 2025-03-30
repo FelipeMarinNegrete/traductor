@@ -13,9 +13,9 @@ class AudioRecorder {
         this.silenceTimeout = silenceTimeout;
         this.silenceTimer = null;
     }
-
-    async startRecording() {
-        alert("llamamos a start")
+     startRecording() {
+        alert("llamamos a start");
+        return("llamamos a start");
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
             alert("Tu navegador no soporta la grabación de audio.");
             return;
@@ -42,6 +42,8 @@ class AudioRecorder {
     }
 
     stopRecording() {
+        alert("llamamos a stop");
+        return("llamamos a stop");
         if (this.mediaRecorder) {
             this.mediaRecorder.stop();
             this.mediaRecorder.onstop = () => {
